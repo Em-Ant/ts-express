@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "tsc && node dist",
-    "start:dev": "tsc --incremental && concurrently -k -p \"[{name}]\" -n \"typescript,nodemon\" -c \"yellow,cyan\" \"tsc -w\" \"nodemon dist/\""
+    "start": "node dist",
+    "start:dev": "concurrently -k -p \"[{name}]\" -n \"typescript,nodemon\" -c \"yellow,cyan\" \"tsc -w\" \"nodemon dist/\""
   },
   "author": "Em-Ant",
   "license": "ISC",
