@@ -18,8 +18,6 @@ app.use(bodyParser.json());
 app.use(helmet());
 app.use(compression());
 
-app.get('/', (req, res) => {
-  res.json({ status: 'ok' });
-});
+app.use(routes);
 
 export default app;
