@@ -27,4 +27,10 @@ api.get('/protected', auth(), (req, res) => {
   });
 });
 
+api.get('/admin', auth(2), (req, res) => {
+  res.json({
+    user: req.context?.user,
+  });
+});
+
 export default api;

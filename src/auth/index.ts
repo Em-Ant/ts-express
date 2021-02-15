@@ -24,17 +24,19 @@ if (config.db.seed) {
     try {
       const testUser = await userStore.getOne();
       if (testUser) {
-        logger.info(`found: ${testUser.firstName} ${testUser.lastName}, keys:`);
+        logger.info(
+          `found: ${testUser.firstName} ${testUser.lastName} - keys:`
+        );
         testUser.keys.forEach((k) =>
-          logger.info(` -- ${k.key} , level: ${k.permissionLevel}`)
+          logger.info(`-- ${k.key} , level: ${k.permissionLevel}`)
         );
 
         return;
       }
 
       const u = new User();
-      u.firstName = 'John';
-      u.lastName = 'Doe';
+      u.firstName = 'Em';
+      u.lastName = 'Ant';
       const user = await userStore.upsertUser(u);
 
       logger.info(
@@ -44,7 +46,13 @@ if (config.db.seed) {
       const key = await keyStore.createKey(u, PermissionLevel.ADMIN);
 
       logger.info(
-        `created test key: ${key.key} - u: ${key.user.id} - l: ${key.permissionLevel} - k: ${key.id}`
+        `created test key 1: ${key.key} - u: ${key.user.id} - l: ${key.permissionLevel} - k: ${key.id}`
+      );
+
+      const key_2 = await keyStore.createKey(u);
+
+      logger.info(
+        `created test key 2: ${key_2.key} - u: ${key_2.user.id} - l: ${key_2.permissionLevel} - k: ${key_2.id}`
       );
     } catch (e) {
       logger.info(e.message);

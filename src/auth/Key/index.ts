@@ -23,7 +23,10 @@ export class KeyRepo implements KeyStore {
     });
   }
 
-  async createKey(user: User, permissionLevel: PermissionLevel): Promise<Key> {
+  async createKey(
+    user: User,
+    permissionLevel: PermissionLevel = PermissionLevel.API_USAGE
+  ): Promise<Key> {
     const key = new Key();
     key.key = generateKey();
     key.user = user;

@@ -24,12 +24,10 @@ export interface Token {
   permissionLevel: PermissionLevel;
 }
 export class TokenService {
-  private userStore!: UserStore;
   private keyStore!: KeyStore;
   private config!: TokenServiceConfig;
 
-  constructor({ userStore, keyStore, config }: TokenServiceDependencies) {
-    this.userStore = userStore;
+  constructor({ keyStore, config }: TokenServiceDependencies) {
     this.keyStore = keyStore;
     this.config = config;
   }
