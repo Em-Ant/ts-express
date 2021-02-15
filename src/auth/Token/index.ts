@@ -41,13 +41,8 @@ export class TokenService {
 
         if (!keyData) return reject(Error('invalid api key'));
 
-        const { userId } = keyData;
-        const user = await this.userStore.getUserbyId(userId);
-
-        if (!user) return reject(Error('invalid api key'));
-
         const data = {
-          name: user.name,
+          name: `${keyData.user?.firstName} ${keyData.user?.lastName}`,
           keyId: keyData.id,
           permissionLevel: keyData.permissionLevel,
         };

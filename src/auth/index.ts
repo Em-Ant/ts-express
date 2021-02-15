@@ -1,5 +1,5 @@
-import { InMemoryKeyStore, PermissionLevel } from './Key';
-import { InMemoryUserStore } from './User';
+import { KeyRepo, PermissionLevel } from './Key';
+import { User, UserRepo } from './User';
 import { TokenService } from './Token';
 import mwareFactory from './mware';
 
@@ -7,8 +7,8 @@ import config from '../config';
 
 import logger from '../logger';
 
-const userStore = new InMemoryUserStore();
-const keyStore = new InMemoryKeyStore();
+const userStore = new UserRepo();
+const keyStore = new KeyRepo();
 
 const tokenService = new TokenService({
   userStore,
@@ -22,16 +22,29 @@ const tokenService = new TokenService({
 if (config.db.seed) {
   (async () => {
     try {
-      const user = await userStore.upsertUser({
-        name: 'Emant',
-      });
+      const testUser = await userStore.getOne();
+      if (testUser) {
+        logger.info(`found: ${testUser.firstName} ${testUser.lastName}, keys:`);
+        testUser.keys.forEach((k) =>
+          logger.info(` -- ${k.key} , level: ${k.permissionLevel}`)
+        );
 
-      logger.info(`created test user: ${user.name} - ${user.id}`);
+        return;
+      }
 
-      const key = await keyStore.createKey(user.id, PermissionLevel.API_USAGE);
+      const u = new User();
+      u.firstName = 'John';
+      u.lastName = 'Doe';
+      const user = await userStore.upsertUser(u);
 
       logger.info(
-        `created test key: ${key.key} - ${key.userId} - ${key.permissionLevel} - ${key.id}`
+        `created test user: ${user.firstName} ${user.lastName} - ${user.id}`
+      );
+
+      const key = await keyStore.createKey(u, PermissionLevel.ADMIN);
+
+      logger.info(
+        `created test key: ${key.key} - u: ${key.user.id} - l: ${key.permissionLevel} - k: ${key.id}`
       );
     } catch (e) {
       logger.info(e.message);

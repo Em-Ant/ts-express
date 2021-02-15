@@ -1,33 +1,31 @@
-import { getUUID } from '../../utils';
-import { User, UserWithOtionalId } from './model';
+import { getManager, EntityManager } from 'typeorm';
+
+import { User } from '../../entity/User';
 
 export interface UserStore {
   getUserbyId: (id: string) => Promise<User | null>;
-  upsertUser: (user: UserWithOtionalId) => Promise<User>;
+  upsertUser: (user: User) => Promise<User>;
+  getOne: () => Promise<User | null | undefined>;
 }
 
-type Store = { [id: string]: User };
+export class UserRepo implements UserStore {
+  private manager!: EntityManager;
 
-export class InMemoryUserStore implements UserStore {
-  private store!: Store;
-
-  constructor(initStore: Store = {}) {
-    this.store = initStore;
+  constructor(manager = getManager()) {
+    this.manager = manager;
   }
 
-  async upsertUser(user: UserWithOtionalId): Promise<User> {
-    const _user = { ...user } as User;
-    if (_user.id === undefined) {
-      _user.id = getUUID();
-    }
-    this.store[_user.id] = _user as User;
-
-    return Promise.resolve(this.store[_user.id]);
+  async upsertUser(user: User): Promise<User> {
+    return await this.manager.save(user);
   }
 
   async getUserbyId(id: string): Promise<User | null> {
-    return Promise.resolve(this.store[id] ?? null);
+    return await this.manager.findOneOrFail(User, id);
+  }
+
+  async getOne(): Promise<User | null | undefined> {
+    return this.manager.findOne(User, { relations: ['keys'] });
   }
 }
 
-export type { User, UserWithOtionalId };
+export { User };

@@ -1,38 +1,35 @@
-import { generateKey, getUUID } from '../../utils';
-import { Key, PermissionLevel } from './model';
+import { getManager, EntityManager } from 'typeorm';
+
+import { Key, PermissionLevel } from '../../entity/Key';
+import { User } from '../../entity/User';
+import { generateKey } from '../../utils';
 
 export interface KeyStore {
   getKey: (key: string) => Promise<Key | null>;
-  createKey: (userId: string, permissionLevel: PermissionLevel) => Promise<Key>;
+  createKey: (user: User, permissionLevel: PermissionLevel) => Promise<Key>;
 }
 
-type Store = { [id: string]: Key };
+export class KeyRepo implements KeyStore {
+  private manager!: EntityManager;
 
-export class InMemoryKeyStore implements KeyStore {
-  private store!: Store;
-
-  constructor(initStore: Store = {}) {
-    this.store = initStore;
+  constructor(manager = getManager()) {
+    this.manager = manager;
   }
 
   async getKey(key: string): Promise<Key> {
-    return Promise.resolve(this.store[key] ?? null);
+    return await this.manager.findOneOrFail(Key, {
+      where: { key },
+      relations: ['user'],
+    });
   }
 
-  async createKey(
-    userId: string,
-    permissionLevel: PermissionLevel
-  ): Promise<Key> {
-    const k = {
-      key: generateKey(),
-      permissionLevel,
-      id: getUUID(),
-      userId,
-    };
+  async createKey(user: User, permissionLevel: PermissionLevel): Promise<Key> {
+    const key = new Key();
+    key.key = generateKey();
+    key.user = user;
+    key.permissionLevel = permissionLevel;
 
-    this.store[k.key] = k;
-
-    return Promise.resolve(k);
+    return this.manager.save(key);
   }
 }
 
