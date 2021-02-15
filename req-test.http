@@ -1,0 +1,8 @@
+GET http://localhost:3000/token
+x-api-key: <api-key>
+
+
+###
+
+GET http://localhost:3000/protected
+Authorization: Bearer <token>

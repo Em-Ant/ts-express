@@ -13,6 +13,9 @@ const config = {
     secret: process.env.AUTH_SECRET ?? 'dev secret',
     expiresIn: process.env.AUTH_EXPIRES_IN ?? '12h',
   },
+  db: {
+    seed: process.env.SEED_DB ?? false,
+  },
 };
 
 export default config;

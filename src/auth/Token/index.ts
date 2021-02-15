@@ -1,6 +1,6 @@
 import jwt, { Secret } from 'jsonwebtoken';
 
-import { KeyStore } from '../Key';
+import { KeyStore, PermissionLevel } from '../Key';
 import { UserStore } from '../User';
 
 export interface TokenServiceConfig {
@@ -14,10 +14,15 @@ export interface TokenServiceDependencies {
   config: TokenServiceConfig;
 }
 
-export interface Token {
+export interface TokenResponse {
   token: string;
 }
 
+export interface Token {
+  name: string;
+  keyId: string;
+  permissionLevel: PermissionLevel;
+}
 export class TokenService {
   private userStore!: UserStore;
   private keyStore!: KeyStore;
@@ -29,43 +34,47 @@ export class TokenService {
     this.config = config;
   }
 
-  async getToken(key: string): Promise<Token> {
-    return new Promise((resolve, reject) => {
-      const keyData = this.keyStore.getKey(key);
+  async getToken(key: string): Promise<TokenResponse> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const keyData = await this.keyStore.getKey(key);
 
-      if (!keyData) return reject(Error('invalid api key'));
+        if (!keyData) return reject(Error('invalid api key'));
 
-      const { userId } = keyData;
-      const user = this.userStore.getUserbyId(userId);
+        const { userId } = keyData;
+        const user = await this.userStore.getUserbyId(userId);
 
-      if (!user) return reject(Error('invalid api key'));
+        if (!user) return reject(Error('invalid api key'));
 
-      const data = {
-        name: user.name,
-        id: user.id,
-        permissions: keyData.permissions,
-      };
+        const data = {
+          name: user.name,
+          keyId: keyData.id,
+          permissionLevel: keyData.permissionLevel,
+        };
 
-      jwt.sign(
-        data,
-        this.config.secret,
-        {
-          expiresIn: this.config.expiresIn,
-        },
-        (err, token) => {
-          if (err || !token)
-            return reject(err || Error('error generating token'));
-          resolve({ token });
-        }
-      );
+        jwt.sign(
+          data,
+          this.config.secret,
+          {
+            expiresIn: this.config.expiresIn,
+          },
+          (err, token) => {
+            if (err || !token)
+              return reject(err || Error('error generating token'));
+            resolve({ token });
+          }
+        );
+      } catch (e) {
+        reject(e);
+      }
     });
   }
 
-  async verify(token: string): Promise<string | Record<string, unknown>> {
+  async verify(token: string): Promise<Token> {
     return new Promise((resolve, reject) => {
       jwt.verify(token, this.config.secret, (err, decoded) => {
         if (err || !decoded) return reject(err || Error('invalid token'));
-        return resolve(decoded as Record<string, unknown>);
+        return resolve(decoded as Token);
       });
     });
   }

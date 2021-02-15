@@ -8,7 +8,7 @@
     "build": "rm -rf ./dist && tsc",
     "start": "node dist",
     "ensure-dist": "if [ ! -e ./dist/index.js ]; then tsc; fi",
-    "start:dev": "npm run ensure-dist && concurrently -k -p \"[{name}]\" -n \"typescript,nodemon\" -c \"yellow,cyan\" \"tsc -w\" \"nodemon dist/\""
+    "start:dev": "npm run ensure-dist && concurrently --handle-input -k -p \"[{name}]\" -n \"typescript,nodemon\" -c \"yellow,cyan\" \"tsc -w\" \"nodemon dist/\""
   },
   "author": "Em-Ant",
   "license": "ISC",

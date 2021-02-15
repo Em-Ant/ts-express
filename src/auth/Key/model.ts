@@ -1,11 +1,12 @@
-export enum Permission {
-  API_USAGE = 'API_USAGE',
-  ADMIN_READ = 'ADMIN_READ',
-  ADMIN = 'ADMIN',
+export enum PermissionLevel {
+  API_USAGE,
+  ADMIN_READ,
+  ADMIN,
 }
 
 export interface Key {
   key: string;
-  permissions: [Permission];
+  permissionLevel: PermissionLevel;
   userId: string;
+  id: string;
 }

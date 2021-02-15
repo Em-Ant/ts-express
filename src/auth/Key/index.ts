@@ -1,9 +1,9 @@
-import { generateKey } from '../../utils';
-import { Key, Permission } from './model';
+import { generateKey, getUUID } from '../../utils';
+import { Key, PermissionLevel } from './model';
 
 export interface KeyStore {
-  getKey: (key: string) => Key | null;
-  createKey: (userId: string, permissions: [Permission]) => Key;
+  getKey: (key: string) => Promise<Key | null>;
+  createKey: (userId: string, permissionLevel: PermissionLevel) => Promise<Key>;
 }
 
 type Store = { [id: string]: Key };
@@ -15,22 +15,26 @@ export class InMemoryKeyStore implements KeyStore {
     this.store = initStore;
   }
 
-  getKey(key: string): Key {
-    return this.store[key] ?? null;
+  async getKey(key: string): Promise<Key> {
+    return Promise.resolve(this.store[key] ?? null);
   }
 
-  createKey(userId: string, permissions: [Permission]): Key {
+  async createKey(
+    userId: string,
+    permissionLevel: PermissionLevel
+  ): Promise<Key> {
     const k = {
       key: generateKey(),
-      permissions,
+      permissionLevel,
+      id: getUUID(),
       userId,
     };
 
     this.store[k.key] = k;
 
-    return k;
+    return Promise.resolve(k);
   }
 }
 
-export { Permission };
+export { PermissionLevel };
 export type { Key };
