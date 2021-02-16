@@ -32,7 +32,7 @@ export class KeyRepo implements KeyStore {
     key.user = user;
     key.permissionLevel = permissionLevel;
 
-    return this.manager.save(key);
+    return await this.manager.save(key);
   }
 }
 

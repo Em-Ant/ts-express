@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   Index,
+  CreateDateColumn,
 } from 'typeorm';
 import { User } from './User';
 
@@ -28,9 +29,12 @@ export class Key {
   })
   permissionLevel!: PermissionLevel;
 
-  @ManyToOne(() => User, (user: User) => user.keys)
+  @ManyToOne(() => User, (user: User) => user.keys, { onDelete: 'CASCADE' })
   user!: User;
 
   @PrimaryGeneratedColumn()
   id!: number;
+
+  @CreateDateColumn()
+  createDate!: Date;
 }

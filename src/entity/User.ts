@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  CreateDateColumn,
+} from 'typeorm';
 import { Key } from './Key';
 
 @Entity()
@@ -12,6 +18,9 @@ export class User {
   @Column()
   lastName!: string;
 
-  @OneToMany(() => Key, (key) => key.user)
-  keys!: [Key];
+  @OneToMany(() => Key, (key) => key.user, { cascade: true })
+  keys!: Key[];
+
+  @CreateDateColumn()
+  createDate!: Date;
 }

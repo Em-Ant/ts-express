@@ -25,7 +25,7 @@ if (config.db.seed) {
       const testUser = await userStore.getOne();
       if (testUser) {
         logger.info(
-          `found: ${testUser.firstName} ${testUser.lastName} - keys:`
+          `found  user: ${testUser.firstName} ${testUser.lastName} - keys:`
         );
         testUser.keys.forEach((k) =>
           logger.info(`-- ${k.key} , level: ${k.permissionLevel}`)
