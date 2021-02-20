@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import tokenService, { auth } from '../auth';
+import { PermissionLevel } from '../auth/Key';
 
 const api = Router();
 
@@ -27,7 +28,7 @@ api.get('/protected', auth(), (req, res) => {
   });
 });
 
-api.get('/admin', auth(2), (req, res) => {
+api.get('/admin', auth(PermissionLevel.ADMIN), (req, res) => {
   res.json({
     user: req.context?.user,
   });
