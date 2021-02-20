@@ -1,5 +1,5 @@
 GET http://localhost:3000/token
-x-api-key: 53Hz8iiGhDBHOGCH7kB1XwsohBtZjQ9P
+x-api-key: <api key>
 
 
 ###

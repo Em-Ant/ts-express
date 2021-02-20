@@ -16,11 +16,13 @@ export class KeyRepo implements KeyStore {
     this.manager = manager;
   }
 
-  async getKey(key: string): Promise<Key> {
-    return await this.manager.findOneOrFail(Key, {
-      where: { key },
-      relations: ['user'],
-    });
+  async getKey(key: string): Promise<Key | null> {
+    return (
+      (await this.manager.findOne(Key, {
+        where: { key },
+        relations: ['user'],
+      })) ?? null
+    );
   }
 
   async createKey(
