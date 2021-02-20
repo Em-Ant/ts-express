@@ -1,5 +1,7 @@
-import { KeyRepo, PermissionLevel } from './Key';
-import { User, UserRepo } from './User';
+import { getCustomRepository } from 'typeorm';
+
+import { KeyRepository, PermissionLevel } from './Key';
+import { User, UserRepository } from './User';
 import { TokenService } from './Token';
 import mwareFactory from './mware';
 
@@ -7,11 +9,10 @@ import config from '../config';
 
 import logger from '../logger';
 
-const userStore = new UserRepo();
-const keyStore = new KeyRepo();
+const userStore = getCustomRepository(UserRepository);
+const keyStore = getCustomRepository(KeyRepository);
 
 const tokenService = new TokenService({
-  userStore,
   keyStore,
   config: {
     secret: config.auth.secret,

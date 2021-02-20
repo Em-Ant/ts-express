@@ -1,17 +1,11 @@
-import { getManager, EntityManager } from 'typeorm';
-
+import { EntityRepository, EntityManager } from 'typeorm';
 import { User } from '../../entity/User';
 
-export interface UserStore {
-  getUserbyId: (id: string) => Promise<User | null>;
-  upsertUser: (user: User) => Promise<User>;
-  getOne: () => Promise<User | null | undefined>;
-}
-
-export class UserRepo implements UserStore {
+@EntityRepository()
+export class UserRepository {
   private manager!: EntityManager;
 
-  constructor(manager = getManager()) {
+  constructor(manager: EntityManager) {
     this.manager = manager;
   }
 

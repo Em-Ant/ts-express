@@ -1,18 +1,14 @@
-import { getManager, EntityManager } from 'typeorm';
+import { EntityRepository, EntityManager } from 'typeorm';
 
 import { Key, PermissionLevel } from '../../entity/Key';
 import { User } from '../../entity/User';
 import { generateKey } from '../../utils';
 
-export interface KeyStore {
-  getKey: (key: string) => Promise<Key | null>;
-  createKey: (user: User, permissionLevel: PermissionLevel) => Promise<Key>;
-}
-
-export class KeyRepo implements KeyStore {
+@EntityRepository()
+export class KeyRepository {
   private manager!: EntityManager;
 
-  constructor(manager = getManager()) {
+  constructor(manager: EntityManager) {
     this.manager = manager;
   }
 

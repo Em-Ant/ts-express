@@ -1,7 +1,6 @@
 import jwt, { Secret } from 'jsonwebtoken';
 
-import { KeyStore, PermissionLevel } from '../Key';
-import { UserStore } from '../User';
+import { KeyRepository, PermissionLevel } from '../Key';
 
 export interface TokenServiceConfig {
   secret: Secret;
@@ -9,8 +8,7 @@ export interface TokenServiceConfig {
 }
 
 export interface TokenServiceDependencies {
-  userStore: UserStore;
-  keyStore: KeyStore;
+  keyStore: KeyRepository;
   config: TokenServiceConfig;
 }
 
@@ -24,7 +22,7 @@ export interface Token {
   permissionLevel: PermissionLevel;
 }
 export class TokenService {
-  private keyStore!: KeyStore;
+  private keyStore!: KeyRepository;
   private config!: TokenServiceConfig;
 
   constructor({ keyStore, config }: TokenServiceDependencies) {
