@@ -1,4 +1,9 @@
+.idea/
+.vscode/
 node_modules/
+build/
+tmp/
+temp/
 dist/
-.vscode
 .env
+*.sqlite

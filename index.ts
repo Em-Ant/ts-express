@@ -1,9 +1,11 @@
-import app from './src';
-import config from './src/config';
-import log from './src/logger';
+import 'reflect-metadata';
 
-const {
-  server: { port },
-} = config;
+import { createConnection } from 'typeorm';
 
-app.listen(port, () => log.info(`server started on port ${port}`));
+createConnection().then(async () => {
+  try {
+    import('./src');
+  } catch (e) {
+    console.log(e);
+  }
+});
