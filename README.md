@@ -1,7 +1,3 @@
-# Awesome Project Build with TypeORM
+# TypeScript Node/Express app with TypeOrm
 
-Steps to run this project:
-
-1. Run `npm i` command
-2. Setup database settings inside `ormconfig.json` file
-3. Run `npm start` command
+with simple api-key and jwt token auth flow
