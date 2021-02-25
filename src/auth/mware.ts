@@ -13,12 +13,12 @@ const tokenValidatorFactory = (service: TokenService) => (
   try {
     const [type, token] = (req.get('Authorization') ?? '').split(' ');
     if (type !== 'Bearer')
-      return res.status(401).json({ message: 'invalid Authorization header' });
+      return next({ status: 401, message: 'invalid Authorization header' });
 
-    const { name, permissionLevel, keyId } = await service.verify(token);
+    const { name, permissionLevel, keyId } = service.verify(token);
 
     if (permissionLevel < level) {
-      return res.status(403).json({ message: 'Forbidden' });
+      return next({ status: 403, message: 'forbidden' });
     }
 
     req.context = {
@@ -31,7 +31,7 @@ const tokenValidatorFactory = (service: TokenService) => (
 
     return next();
   } catch (e) {
-    return res.status(401).json({ message: e.message });
+    return next({ status: 401, message: e.message });
   }
 };
 

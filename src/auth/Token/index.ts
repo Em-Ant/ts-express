@@ -31,42 +31,25 @@ export class TokenService {
   }
 
   async getToken(key: string): Promise<TokenResponse> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const keyData = await this.keyStore.getKey(key);
+    const keyData = await this.keyStore.getKey(key);
 
-        if (!keyData) return reject(Error('invalid api key'));
+    if (!keyData) throw Error('invalid api key');
 
-        const data = {
-          name: `${keyData.user?.firstName} ${keyData.user?.lastName}`,
-          keyId: keyData.id,
-          permissionLevel: keyData.permissionLevel,
-        };
+    const data = {
+      name: `${keyData.user?.firstName} ${keyData.user?.lastName}`,
+      keyId: keyData.id,
+      permissionLevel: keyData.permissionLevel,
+    };
 
-        jwt.sign(
-          data,
-          this.config.secret,
-          {
-            expiresIn: this.config.expiresIn,
-          },
-          (err, token) => {
-            if (err || !token)
-              return reject(err || Error('error generating token'));
-            resolve({ token });
-          }
-        );
-      } catch (e) {
-        reject(e);
-      }
+    const token = jwt.sign(data, this.config.secret, {
+      expiresIn: this.config.expiresIn,
     });
+    return { token };
   }
 
-  async verify(token: string): Promise<Token> {
-    return new Promise((resolve, reject) => {
-      jwt.verify(token, this.config.secret, (err, decoded) => {
-        if (err || !decoded) return reject(err || Error('invalid token'));
-        return resolve(decoded as Token);
-      });
-    });
+  verify(token: string): Token {
+    const decoded = jwt.verify(token, this.config.secret) as Token;
+    if (!decoded) throw Error('invalid token');
+    return decoded;
   }
 }
