@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 
 import tokenService, { auth } from '../auth';
 import { PermissionLevel } from '../auth/Key';
@@ -9,16 +9,15 @@ api.get('/', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-api.get('/token', async (req, res) => {
+api.get('/token', async (req, res, next) => {
   const key = req.get('x-api-key');
 
-  if (!key)
-    return res.status(401).json({ message: 'no x-api-key header found' });
+  if (!key) throw { status: 401, message: 'no x-api-key header found' };
   try {
     const token = await tokenService.getToken(key);
     res.json(token);
   } catch ({ message }) {
-    res.status(401).json({ message });
+    next({ status: 401, message });
   }
 });
 
@@ -32,6 +31,20 @@ api.get('/admin', auth(PermissionLevel.ADMIN), (req, res) => {
   res.json({
     user: req.context?.user,
   });
+});
+
+interface HttpError {
+  status?: number;
+  message?: string;
+}
+
+api.use((err: HttpError, _: Request, res: Response, next: NextFunction) => {
+  if (err) {
+    return res
+      .status(err.status ?? 500)
+      .json({ message: err.message ?? 'unknown error' });
+  }
+  next();
 });
 
 export default api;
